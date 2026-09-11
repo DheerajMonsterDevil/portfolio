@@ -1,17 +1,14 @@
 import type { NextConfig } from "next";
 
-const isGithubPages = process.env.GITHUB_PAGES === "true";
-const basePath = isGithubPages ? "/portfolio" : "";
-
+// This is a user site (dheerajreddybhumanapalli.github.io), served from the
+// domain root, so no basePath is needed. (basePath is only for project sites
+// like <user>.github.io/<repo>.)
 const nextConfig: NextConfig = {
   output: "export",
-  ...(basePath
-    ? { basePath, assetPrefix: `${basePath}/` }
-    : {}),
   images: { unoptimized: true },
   trailingSlash: true,
   env: {
-    NEXT_PUBLIC_BASE_PATH: basePath,
+    NEXT_PUBLIC_BASE_PATH: "",
   },
 };
 

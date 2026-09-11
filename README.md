@@ -2,7 +2,7 @@
 
 A personal portfolio site built with **Next.js 15**, **React 19**, and **Tailwind CSS v4**. It is a fully static single-page application exported for hosting on **GitHub Pages**.
 
-**Live site:** [https://dheerajreddybhumanapalli.github.io/portfolio/](https://dheerajreddybhumanapalli.github.io/portfolio/)
+**Live site:** [https://dheerajreddybhumanapalli.github.io/](https://dheerajreddybhumanapalli.github.io/)
 
 ---
 
@@ -48,8 +48,8 @@ A personal portfolio site built with **Next.js 15**, **React 19**, and **Tailwin
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/dheerajreddybhumanapalli/portfolio.git
-cd portfolio
+git clone https://github.com/dheerajreddybhumanapalli/dheerajreddybhumanapalli.github.io.git
+cd dheerajreddybhumanapalli.github.io
 ```
 
 ### 2. Install dependencies
@@ -66,8 +66,6 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-The dev server runs **without** the `/portfolio` base path, so local URLs are at the root.
-
 ---
 
 ## Available Scripts
@@ -75,8 +73,8 @@ The dev server runs **without** the `/portfolio` base path, so local URLs are at
 | Script | Description |
 |--------|-------------|
 | `npm run dev` | Start Next.js dev server with hot reload |
-| `npm run build` | Production static export for **local** preview (no `/portfolio` prefix) |
-| `npm run build:pages` | Production static export for **GitHub Pages** (`/portfolio` base path) |
+| `npm run build` | Production static export for **local** preview |
+| `npm run build:pages` | Production static export for **GitHub Pages** (same as `build`; kept for compatibility) |
 | `npm run start` | Serve the `out/` folder locally after `npm run build` |
 | `npm run lint` | Run ESLint |
 | `npm run deploy` | Build for GitHub Pages and publish to the `gh-pages` branch |
@@ -98,7 +96,7 @@ Open [http://localhost:3000](http://localhost:3000).
 |------|---------|-----|
 | Active development | `npm run dev` | `http://localhost:3000/` |
 | Test production build locally | `npm run build && npm run start` | `http://localhost:3000/` |
-| Publish to GitHub Pages | `npm run deploy` | `https://dheerajreddybhumanapalli.github.io/portfolio/` |
+| Publish to GitHub Pages | `npm run deploy` | `https://dheerajreddybhumanapalli.github.io/` |
 
 ---
 
@@ -121,32 +119,29 @@ npm run deploy
 
 This runs:
 
-1. `predeploy` → `npm run build:pages` — builds with `GITHUB_PAGES=true` and `/portfolio` base path
+1. `predeploy` → `npm run build:pages` — static export with no base path (user site is served from the domain root)
 2. `deploy` → `gh-pages -d out --nojekyll` — pushes the `out/` folder to the `gh-pages` branch (the `--nojekyll` flag is required so GitHub Pages serves the `_next/` directory)
 
 You should see `Published` when it succeeds. Allow 1–2 minutes for GitHub Pages to update.
 
 ### How the base path works
 
-Because the repo is named `portfolio`, GitHub Pages serves it at:
+This repo is a user site (`<username>.github.io`), so GitHub Pages serves it from the domain root:
 
 ```
-https://<username>.github.io/portfolio/
+https://dheerajreddybhumanapalli.github.io/
 ```
 
-When `GITHUB_PAGES=true`, `next.config.ts` sets:
+That means `next.config.ts` uses **no `basePath` / `assetPrefix`**. (A `basePath` like `/portfolio` is only needed for project sites served at `<username>.github.io/<repo>/`.)
 
-- `basePath: "/portfolio"`
-- `assetPrefix: "/portfolio/"`
-
-All static assets and links use `assetPath()` from `lib/utils.ts` so paths resolve correctly on GitHub Pages.
+All static assets and links use `assetPath()` from `lib/utils.ts` so paths keep working if a base path is ever reintroduced.
 
 ---
 
 ## Project Structure
 
 ```
-portfolio/
+dheerajreddybhumanapalli.github.io/
 ├── app/                    # Next.js App Router
 │   ├── layout.tsx          # Root layout, fonts, metadata, theme provider
 │   ├── page.tsx            # Home page — composes all sections
@@ -255,7 +250,7 @@ npm run build && npm run start
 
 ### Blank page or broken styles on GitHub Pages
 
-You likely deployed with `npm run build` instead of `npm run deploy`. Always use `npm run deploy`, which runs `build:pages` with the correct `/portfolio` base path.
+Make sure you deploy with `npm run deploy` so the `out/` folder is rebuilt and pushed to the `gh-pages` branch. If styles/JS are broken, open devtools and check for 404s under `_next/static/` — that usually means the deployed HTML references a stale `basePath` or the `--nojekyll` flag was missing.
 
 ### CSS/JS 404 — unstyled page or invisible content
 
