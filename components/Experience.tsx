@@ -10,7 +10,7 @@ export function Experience() {
         <FadeIn>
           <SectionHeading
             title="Experience"
-            subtitle="Professional roles across software engineering and data science."
+            subtitle="Professional roles across AI engineering and production software."
           />
         </FadeIn>
         <FadeIn delay={0.1}>

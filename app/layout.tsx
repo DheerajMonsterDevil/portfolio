@@ -16,13 +16,13 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Dheeraj Reddy Bhumanapalli | Software Engineer",
+  title: "Dheeraj Reddy Bhumanapalli | AI Software Engineer",
   description:
-    "Portfolio of Dheeraj Reddy Bhumanapalli — Software Engineer specializing in full-stack development, LLMs, and data pipelines.",
+    "Portfolio of Dheeraj Reddy Bhumanapalli — AI Software Engineer specializing in Generative AI, RAG, agentic workflows, LLM inference, and production backend systems.",
   openGraph: {
-    title: "Dheeraj Reddy Bhumanapalli | Software Engineer",
+    title: "Dheeraj Reddy Bhumanapalli | AI Software Engineer",
     description:
-      "Portfolio showcasing projects in Django, React, AWS, Langchain, and more.",
+      "Portfolio showcasing Generative AI work: LangGraph pipelines, RAG, LLM serving on NVIDIA GPUs, and large-scale data platforms.",
     type: "website",
   },
 };

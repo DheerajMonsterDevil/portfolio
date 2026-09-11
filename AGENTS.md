@@ -1,129 +1,46 @@
-# AGENTS.md — AI Agent Guide
+# AGENTS.md
 
-Instructions for AI coding agents (Cursor, Copilot, Codex, etc.) working in this repository.
+Instructions for AI coding agents working in this repository.
 
-## Project summary
+## Project Overview
 
-Static portfolio site: **Next.js 15 App Router + React 19 + Tailwind CSS v4**, exported to HTML and hosted on **GitHub Pages** at `/portfolio` base path.
-
-- **Source branch:** `master`
-- **Deploy branch:** `gh-pages` (generated — do not edit manually)
-- **Live URL:** https://dheerajreddybhumanapalli.github.io/portfolio/
-
-## Architecture
-
-```
-app/page.tsx          → composes sections (Navbar, Hero, Projects, Experience, Contact)
-data/portfolio.ts     → single source of truth for projects & experience content
-lib/utils.ts          → cn(), assetPath(), basePath
-next.config.ts        → output: "export", conditional basePath for GitHub Pages
-public/               → static files (resume, image, favicon)
-components/           → all UI components ("use client" where needed)
-```
-
-### Key constraints
-
-1. **`output: "export"`** — no server features (API routes, SSR, `next start`, dynamic server rendering).
-2. **GitHub Pages base path** — when `GITHUB_PAGES=true`, `basePath` is `/portfolio`. Any public file URL in components must use `assetPath("/file.pdf")`, not hardcoded paths.
-3. **Images** — `images: { unoptimized: true }` in next.config (required for static export).
-4. **Legacy `src/` folder** — old CRA app; **ignore it**. Active code is in `app/`, `components/`, `data/`.
+Personal portfolio site for Dheeraj Reddy Bhumanapalli. Built with Next.js 15 (App Router), TypeScript, Tailwind CSS 4, framer-motion, and lucide-react. Single page with sections: Hero, Projects, Experience, Contact. Deployed to GitHub Pages as a static export.
 
 ## Commands
 
 ```bash
-npm run dev           # Development (no base path)
-npm run build         # Local production build (no base path)
-npm run build:pages   # GitHub Pages build (basePath /portfolio)
-npm run start         # Serve out/ locally (NOT next start)
-npm run deploy        # build:pages + push to gh-pages
-npm run lint
+npm run dev          # Local dev server (http://localhost:3000)
+npm run build        # Production build
+npm run lint         # Lint (next lint)
+npm run build:pages  # Static export for GitHub Pages (GITHUB_PAGES=true)
+npm run deploy       # Build + push to gh-pages branch
 ```
 
-Never suggest `next start` — it fails with static export.
+There is no test suite. Verify changes with `npm run lint` and `npm run build`.
+
+## Architecture
+
+- `app/` — Next.js App Router: `layout.tsx`, `page.tsx`, `globals.css`
+- `components/` — React components, one per file (Navbar, Hero, Projects, ProjectCard, Experience, ExperienceTimeline, Contact, FadeIn, SectionHeading, ThemeProvider)
+- `data/portfolio.ts` — All site content (projects, experience, socials). Edit content here, not in components.
+- `lib/utils.ts` — `cn()` (clsx + tailwind-merge), `basePath`, `assetPath()`
+- `public/` — Static assets (resume.pdf, profile_image.jpg, etc.)
 
 ## Conventions
 
-### File organization
+- TypeScript strict mode; no runtime libraries outside those in `package.json`
+- Use the `@/` path alias for all imports (e.g., `import { cn } from "@/lib/utils"`)
+- Components use **named exports** (`export function Navbar()`), not default exports
+- Merge conditional classes with `cn()` from `lib/utils.ts`
+- Use `assetPath("/...")` from `lib/utils.ts` for asset URLs in `src`/`href` so GitHub Pages basePath is respected; plain relative paths are fine for `<next/image>` in `public/`
+- Animations: framer-motion; reuse the `FadeIn` component for scroll/fade effects and respect `useReducedMotion`
+- Icons: lucide-react only
+- Dark mode: next-themes via `ThemeProvider`; use Tailwind's `dark:` variants
+- Styling: Tailwind utility classes inline; no CSS modules
+- Keep components small and section-focused; presentational content lives in `data/portfolio.ts`
 
-- New pages → `app/`
-- Reusable UI → `components/`
-- Content/data → `data/portfolio.ts` (prefer editing data over hardcoding in components)
-- Utilities → `lib/`
-- Static assets → `public/`
+## Deployment Notes
 
-### TypeScript
-
-- Strict mode enabled
-- Path alias: `@/*` maps to project root
-- Export interfaces alongside data in `data/portfolio.ts`
-
-### Components
-
-- Add `"use client"` only when using hooks, browser APIs, or event handlers
-- Use `cn()` from `@/lib/utils` for conditional Tailwind classes
-- Use `assetPath()` for any `/public` file references (resume, images)
-- Use `FadeIn` wrapper for scroll animations
-- Use `SectionHeading` for consistent section titles
-
-### Styling
-
-- Tailwind utility classes in JSX
-- Theme tokens via CSS variables in `app/globals.css` (`--bg`, `--fg`, `--accent`, etc.)
-- Dark mode: `class` strategy via `next-themes` (`.dark` class on `<html>`)
-- Do not add separate CSS files unless necessary; prefer Tailwind
-
-### Content changes
-
-| What to change | Where |
-|----------------|-------|
-| Projects | `data/portfolio.ts` → `projects` |
-| Experience | `data/portfolio.ts` → `experiences` |
-| Contact email/phone | `components/Contact.tsx` |
-| Hero text/image | `components/Hero.tsx` + `public/` |
-| Page title/SEO | `app/layout.tsx` metadata |
-| Resume PDF | `public/resume.pdf` |
-
-## Deployment
-
-```bash
-npm run deploy
-```
-
-Requires `gh-pages` npm package (already in devDependencies). Pushes `out/` to `gh-pages` branch.
-
-GitHub Pages settings: branch `gh-pages`, folder `/ (root)`.
-
-## What NOT to do
-
-- Do not use `next start`, API routes, or server-only Next.js features
-- Do not hardcode `/portfolio` in component paths — use `assetPath()`
-- Do not edit `gh-pages` branch directly
-- Do not modify or import from legacy `src/` directory
-- Do not commit `node_modules/`, `.next/`, or `out/` (all gitignored)
-- Do not change `basePath` without updating repo name / GitHub Pages URL
-
-## Common tasks
-
-### Add a new project
-
-Add a `CardItem` entry to `projects` in `data/portfolio.ts`.
-
-### Add a new section
-
-1. Create component in `components/`
-2. Import and add to `app/page.tsx`
-3. Add nav link in `components/Navbar.tsx` (`navLinks` + `sectionIds` in IntersectionObserver)
-
-### Change accent color
-
-Update `--accent` and `--accent-fg` in `app/globals.css` for both `:root` and `.dark`.
-
-### Test GitHub Pages build locally
-
-```bash
-npm run build:pages
-npx serve@latest out -l 3000
-# Open http://localhost:3000/portfolio/ (assets use /portfolio prefix)
-```
-
-Note: local `serve` may not perfectly mirror GitHub Pages path rewriting; the live site is the source of truth for deploy verification.
+- GitHub Pages static export via `out/` directory (see `next.config.ts` for the `GITHUB_PAGES` env handling)
+- `npm run deploy` runs `build:pages` then `gh-pages -d out --nojekyll`
+- Do not introduce server-side features (API routes, server actions, middleware) — the site must remain a static export

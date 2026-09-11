@@ -10,7 +10,7 @@ export function Projects() {
         <FadeIn>
           <SectionHeading
             title="Projects"
-            subtitle="Selected work spanning full-stack development, LLM pipelines, and observability."
+            subtitle="Selected work spanning Generative AI, multimodal pipelines, and large-scale data platforms."
           />
         </FadeIn>
         <div className="grid gap-6 sm:grid-cols-2">

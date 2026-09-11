@@ -38,11 +38,11 @@ export function Hero() {
             <h1 className="mt-2 text-4xl font-bold tracking-tight sm:text-5xl">
               Dheeraj Reddy Bhumanapalli
             </h1>
-            <p className="mt-3 text-xl text-muted">Software Engineer</p>
+            <p className="mt-3 text-xl text-muted">AI Software Engineer</p>
             <p className="mt-4 max-w-xl text-muted leading-relaxed">
-              Building full-stack applications, LLM-powered pipelines, and
-              scalable systems with Django, React, AWS, and modern AI tooling.
-            </p>
+              Building Generative AI solutions and production software — RAG,
+              agentic workflows, and LLM inference — with Python, FastAPI,
+              Django, PyTorch, and AWS.</p>
           </FadeIn>
 
           <FadeIn delay={0.2}>

@@ -177,13 +177,8 @@ portfolio/
 ├── tsconfig.json           # TypeScript config (@/* path alias)
 ├── package.json
 ├── README.md
-├── AGENTS.md               # Guide for AI coding agents
-└── CLAUDE.md               # Guide for Claude / AI assistants
+└── AGENTS.md               # Guide for AI coding agents
 ```
-
-### Legacy code (do not use)
-
-The `src/` and `static/` directories are remnants of the **old Create React App** version. The active app lives in `app/`, `components/`, and `data/`. Do not edit or import from `src/` for new work.
 
 ---
 
