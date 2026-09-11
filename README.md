@@ -1,6 +1,6 @@
 # Portfolio — Dheeraj Reddy Bhumanapalli
 
-A personal portfolio site built with **Next.js 15**, **React 19**, and **Tailwind CSS v4**. It is a fully static single-page application exported for hosting on **GitHub Pages**.
+A personal portfolio site built with **Next.js 15**, **React 19**, and **Tailwind CSS v4**. It is a fully static multi-page application exported for hosting on **GitHub Pages**.
 
 **Live site:** [https://dheerajreddybhumanapalli.github.io/](https://dheerajreddybhumanapalli.github.io/)
 
@@ -8,7 +8,8 @@ A personal portfolio site built with **Next.js 15**, **React 19**, and **Tailwin
 
 ## Features
 
-- Single-page layout with smooth in-page navigation (Home, Projects, Experience, Contact)
+- Single-page home layout with smooth in-page navigation (Home, Projects, Experience, Contact)
+- Blog (`/blog`) with per-post pages, tag pages, search, RSS, sitemap, and per-post SEO metadata
 - Dark / light theme toggle with system preference support
 - Scroll-triggered section highlighting in the navbar
 - Expandable project cards with tech stack tags
@@ -145,20 +146,36 @@ dheerajreddybhumanapalli.github.io/
 ├── app/                    # Next.js App Router
 │   ├── layout.tsx          # Root layout, fonts, metadata, theme provider
 │   ├── page.tsx            # Home page — composes all sections
+│   ├── blog/
+│   │   ├── page.tsx        # Blog listing (search + tag filter)
+│   │   ├── [slug]/page.tsx # Blog post page (SEO meta + JSON-LD)
+│   │   └── tag/[tag]/page.tsx # Tag listing page
+│   ├── sitemap.ts          # Static sitemap.xml
 │   └── globals.css         # Tailwind import + CSS custom properties (themes)
 ├── components/             # React components
-│   ├── Navbar.tsx          # Sticky nav, theme toggle, mobile menu
+│   ├── Navbar.tsx          # Route-aware nav (anchors on home, links on blog)
+│   ├── Footer.tsx          # Shared footer (Blog, RSS, Resume links)
 │   ├── Hero.tsx            # Profile intro, CTA buttons
 │   ├── Projects.tsx        # Projects section wrapper
 │   ├── ProjectCard.tsx     # Expandable project card
 │   ├── Experience.tsx      # Experience section wrapper
 │   ├── ExperienceTimeline.tsx
 │   ├── Contact.tsx         # Email/phone with copy buttons
+│   ├── BlogCard.tsx        # Blog post preview card
+│   ├── BlogList.tsx        # Client-side search + tag filter for /blog
+│   ├── LatestPosts.tsx     # Home page "Latest posts" teaser section
+│   ├── ShareButtons.tsx    # X / LinkedIn / copy-link share (no backend)
+│   ├── PostNav.tsx         # Prev/next navigation + related posts
 │   ├── SectionHeading.tsx  # Reusable section title
 │   ├── FadeIn.tsx          # Framer Motion scroll animation
 │   └── ThemeProvider.tsx   # next-themes wrapper
+├── content/
+│   └── blog/               # Blog posts in Markdown (see _template.md)
+│       └── _template.md    # Frontmatter + formatting reference (ignored by build)
 ├── data/
 │   └── portfolio.ts        # Projects & experience content (edit here)
+├── scripts/
+│   └── generate-rss.mjs    # Builds public/rss.xml before every build
 ├── lib/
 │   └── utils.ts            # cn(), assetPath(), basePath helpers
 ├── public/                 # Static assets (copied to out/ on build)
@@ -197,6 +214,20 @@ export interface CardItem {
 ```
 
 After editing, run `npm run dev` to preview, then `npm run deploy` to publish.
+
+### Publishing a blog post
+
+1. Copy `content/blog/_template.md` to a new file, e.g. `content/blog/vllm-vs-sglang-first-look.md`.
+   - Filename rules: lowercase letters, numbers, and hyphens only. The filename becomes the URL (`/blog/vllm-vs-sglang-first-look/`).
+   - Files starting with `_` (like `_template.md`) are ignored.
+2. Fill in the frontmatter:
+   - `title`, `date` (`YYYY-MM-DD`), `summary` (1–2 sentences, used for SEO), `tags` (e.g. `[ai-news, newsletter]`)
+   - Optional: `image` (path to a custom OG image in `public/`), `draft: true` (hides the post until you remove it)
+3. Write the body in Markdown (headings, code blocks, tables, quotes all supported).
+4. Preview with `npm run dev` → `http://localhost:3000/blog/your-slug/`.
+5. Publish with `npm run deploy`. The RSS feed (`/rss.xml`) and sitemap regenerate automatically on every build.
+
+> After deploying, submit `https://dheerajreddybhumanapalli.github.io/sitemap.xml` in Google Search Console and Bing Webmaster Tools so new posts get indexed.
 
 ### Contact info
 

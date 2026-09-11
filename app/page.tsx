@@ -2,7 +2,9 @@ import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { Projects } from "@/components/Projects";
 import { Experience } from "@/components/Experience";
+import { LatestPosts } from "@/components/LatestPosts";
 import { Contact } from "@/components/Contact";
+import { Footer } from "@/components/Footer";
 
 export default function Home() {
   return (
@@ -12,11 +14,10 @@ export default function Home() {
         <Hero />
         <Projects />
         <Experience />
+        <LatestPosts />
         <Contact />
       </main>
-      <footer className="border-t border-border py-8 text-center text-sm text-muted">
-        © {new Date().getFullYear()} Dheeraj Reddy Bhumanapalli
-      </footer>
+      <Footer />
     </>
   );
 }

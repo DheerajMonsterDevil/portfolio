@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Menu, Moon, Sun, X } from "lucide-react";
 import { cn, assetPath } from "@/lib/utils";
 
-const navLinks = [
+const homeLinks = [
   { href: "#home", label: "Home" },
   { href: "#projects", label: "Projects" },
   { href: "#experience", label: "Experience" },
@@ -17,12 +19,15 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
+  const pathname = usePathname();
+  const isHome = pathname === "/";
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
+    if (!isHome) return;
     const sectionIds = ["home", "projects", "experience", "contact"];
     const observers: IntersectionObserver[] = [];
 
@@ -42,7 +47,7 @@ export function Navbar() {
     });
 
     return () => observers.forEach((o) => o.disconnect());
-  }, []);
+  }, [isHome]);
 
   const handleNavClick = (href: string) => {
     setMobileOpen(false);
@@ -50,71 +55,106 @@ export function Navbar() {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
+
+  const themeButton = (className?: string) => (
+    <button
+      type="button"
+      onClick={toggleTheme}
+      className={className ?? "ml-2 rounded-lg p-2 text-muted transition-colors hover:bg-card hover:text-foreground"}
+      aria-label="Toggle theme"
+    >
+      {mounted && theme === "dark" ? (
+        <Sun className="h-5 w-5" />
+      ) : (
+        <Moon className="h-5 w-5" />
+      )}
+    </button>
+  );
+
+  const resumeLink = (className: string) => (
+    <a
+      href={assetPath("/resume.pdf")}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={className}
+    >
+      Resume
+    </a>
+  );
+
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
       <nav className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-        <button
-          type="button"
-          onClick={() => handleNavClick("#home")}
-          className="text-lg font-semibold tracking-tight"
-        >
-          DRB
-        </button>
+        {isHome ? (
+          <button
+            type="button"
+            onClick={() => handleNavClick("#home")}
+            className="text-lg font-semibold tracking-tight"
+          >
+            DRB
+          </button>
+        ) : (
+          <Link href="/" className="text-lg font-semibold tracking-tight">
+            DRB
+          </Link>
+        )}
 
         <div className="hidden items-center gap-1 md:flex">
-          {navLinks.map((link) => {
-            const id = link.href.replace("#", "");
-            return (
-              <button
-                key={link.href}
-                type="button"
-                onClick={() => handleNavClick(link.href)}
+          {isHome ? (
+            homeLinks.map((link) => {
+              const id = link.href.replace("#", "");
+              return (
+                <button
+                  key={link.href}
+                  type="button"
+                  onClick={() => handleNavClick(link.href)}
+                  className={cn(
+                    "rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                    activeSection === id
+                      ? "text-accent"
+                      : "text-muted hover:text-foreground"
+                  )}
+                >
+                  {link.label}
+                </button>
+              );
+            })
+          ) : (
+            <>
+              <Link
+                href="/"
+                className="rounded-lg px-3 py-2 text-sm font-medium text-muted transition-colors hover:text-foreground"
+              >
+                Home
+              </Link>
+              <Link
+                href="/blog"
                 className={cn(
                   "rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                  activeSection === id
+                  pathname.startsWith("/blog")
                     ? "text-accent"
                     : "text-muted hover:text-foreground"
                 )}
               >
-                {link.label}
-              </button>
-            );
-          })}
-          <a
-            href={assetPath("/resume.pdf")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-lg px-3 py-2 text-sm font-medium text-muted transition-colors hover:text-foreground"
-          >
-            Resume
-          </a>
-          <button
-            type="button"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="ml-2 rounded-lg p-2 text-muted transition-colors hover:bg-card hover:text-foreground"
-            aria-label="Toggle theme"
-          >
-            {mounted && theme === "dark" ? (
-              <Sun className="h-5 w-5" />
-            ) : (
-              <Moon className="h-5 w-5" />
-            )}
-          </button>
+                Blog
+              </Link>
+            </>
+          )}
+          {isHome && (
+            <Link
+              href="/blog"
+              className="rounded-lg px-3 py-2 text-sm font-medium text-muted transition-colors hover:text-foreground"
+            >
+              Blog
+            </Link>
+          )}
+          {resumeLink("rounded-lg px-3 py-2 text-sm font-medium text-muted transition-colors hover:text-foreground")}
+          {themeButton()}
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
-          <button
-            type="button"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="rounded-lg p-2 text-muted"
-            aria-label="Toggle theme"
-          >
-            {mounted && theme === "dark" ? (
-              <Sun className="h-5 w-5" />
-            ) : (
-              <Moon className="h-5 w-5" />
-            )}
-          </button>
+          {themeButton("rounded-lg p-2 text-muted")}
           <button
             type="button"
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -129,30 +169,54 @@ export function Navbar() {
       {mobileOpen && (
         <div className="border-t border-border bg-background px-6 py-4 md:hidden">
           <div className="flex flex-col gap-1">
-            {navLinks.map((link) => {
-              const id = link.href.replace("#", "");
-              return (
-                <button
-                  key={link.href}
-                  type="button"
-                  onClick={() => handleNavClick(link.href)}
+            {isHome ? (
+              homeLinks.map((link) => {
+                const id = link.href.replace("#", "");
+                return (
+                  <button
+                    key={link.href}
+                    type="button"
+                    onClick={() => handleNavClick(link.href)}
+                    className={cn(
+                      "rounded-lg px-3 py-2 text-left text-sm font-medium",
+                      activeSection === id ? "text-accent" : "text-muted"
+                    )}
+                  >
+                    {link.label}
+                  </button>
+                );
+              })
+            ) : (
+              <>
+                <Link
+                  href="/"
+                  onClick={() => setMobileOpen(false)}
+                  className="rounded-lg px-3 py-2 text-left text-sm font-medium text-muted"
+                >
+                  Home
+                </Link>
+                <Link
+                  href="/blog"
+                  onClick={() => setMobileOpen(false)}
                   className={cn(
                     "rounded-lg px-3 py-2 text-left text-sm font-medium",
-                    activeSection === id ? "text-accent" : "text-muted"
+                    pathname.startsWith("/blog") ? "text-accent" : "text-muted"
                   )}
                 >
-                  {link.label}
-                </button>
-              );
-            })}
-            <a
-              href={assetPath("/resume.pdf")}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-lg px-3 py-2 text-sm font-medium text-muted"
-            >
-              Resume
-            </a>
+                  Blog
+                </Link>
+              </>
+            )}
+            {isHome && (
+              <Link
+                href="/blog"
+                onClick={() => setMobileOpen(false)}
+                className="rounded-lg px-3 py-2 text-left text-sm font-medium text-muted"
+              >
+                Blog
+              </Link>
+            )}
+            {resumeLink("rounded-lg px-3 py-2 text-sm font-medium text-muted")}
           </div>
         </div>
       )}
